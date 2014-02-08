@@ -38,9 +38,11 @@ class MapViewer
 	
 	public function generateRoomSamples()
 	{
+		//*
 		floorplan.removeAllRooms();
+		floorplan.width = 38;
+		floorplan.height = 18;
 		
-		/*
 		generateRoom(floorplan, 1 + tos, 4 + wos, 1 + wos, 2, 5, 6, 5, 3);
 		generateRoom(floorplan, 3 + tos, 4 + wos, 2 + wos, 9, 5, 22, 3, 3);
 		generateRoom(floorplan, 1 + tos, 4 + wos, 1 + wos, 32, 5, 6, 5, 3);
@@ -50,9 +52,9 @@ class MapViewer
 		generateRoom(floorplan, 1 + tos, 4 + wos, 3 + wos, 19, 12, 2, 6, 3);
 		generateRoom(floorplan, 2 + tos, 4 + wos, 2 + wos, 22, 12, 9, 6, 3);
 		generateRoom(floorplan, 1 + tos, 4 + wos, 1 + wos, 32, 13, 6, 5, 2);
-		*/
+		//*/
 		
-		generateFloorplan(floorplan, 38, 18, 7);
+		//generateFloorplan(floorplan, 38, 18, 7);
 		
 		drawRooms(floorplan);
 	}
@@ -70,6 +72,8 @@ class MapViewer
 	
 	public function generateFloorplan(floorplan:Floorplan, maxWidth:Int, maxHeight:Int, roomSize:Int, walls:Int=5)
 	{
+		floorplan.removeAllRooms();
+		
 		floorplan.width = maxWidth;
 		floorplan.height = maxHeight;
 		
