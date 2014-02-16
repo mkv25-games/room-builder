@@ -14,6 +14,9 @@
 	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
+	<source path="externals/polygonal-ds/src" />
+	<source path="externals/polygonal-core/src" />
+	<source path="externals/polygonal-printf/src" />
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	

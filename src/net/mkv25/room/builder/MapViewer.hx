@@ -1,7 +1,11 @@
 package net.mkv25.room.builder;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
+import flash.display.Graphics;
+import flash.display.Sprite;
 import flash.geom.Rectangle;
+import haxe.Timer;
+import net.mkv25.room.pathfinding.PathFinder;
 import net.mkv25.room.planner.Floorplan;
 import net.mkv25.room.planner.Room;
 import openfl.Assets;
@@ -9,7 +13,10 @@ import openfl.Assets;
 class MapViewer
 {	
 	public var grid:Bitmap;
+	public var paths:Sprite;
+	
 	public var floorplan:Floorplan;
+	public var pathFinder:PathFinder;
 	
 	var floors:Tileset;
 	var walls:Wallset;
@@ -21,7 +28,10 @@ class MapViewer
 	public function new() 
 	{
 		grid = new Bitmap();
+		paths = new Sprite();
+		
 		floorplan = new Floorplan();
+		pathFinder = new PathFinder();
 		
 		floors = new Tileset(Tile.WIDTH, Tile.HEIGHT, Assets.getBitmapData('img/g02.png'));
 		walls = new Wallset(Wallpiece.WIDTH, Wallpiece.HEIGHT, Assets.getBitmapData('img/w01.png'));
@@ -59,7 +69,14 @@ class MapViewer
 		drawRooms(floorplan);
 	}
 	
-	public function drawRooms(floorplan:Floorplan)
+	public function generatePathing():Void
+	{
+		pathFinder.graphFloorplan(floorplan);
+		pathFinder.report();
+		pathFinder.draw(paths);
+	}
+	
+	public function drawRooms(floorplan:Floorplan):Void
 	{
 		walls.blitOutsideWallBox(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
 		floors.blitTileFill(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
@@ -70,7 +87,12 @@ class MapViewer
 		}
 	}
 	
-	public function generateFloorplan(floorplan:Floorplan, maxWidth:Int, maxHeight:Int, roomSize:Int, walls:Int=5)
+	public function drawPaths():Void
+	{
+		pathFinder.draw(paths);
+	}
+	
+	public function generateFloorplan(floorplan:Floorplan, maxWidth:Int, maxHeight:Int, roomSize:Int, walls:Int=5):Void
 	{
 		floorplan.removeAllRooms();
 		

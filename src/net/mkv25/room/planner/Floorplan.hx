@@ -3,6 +3,9 @@ import flash.geom.Rectangle;
 
 class Floorplan
 {
+	public var x:Int;
+	public var y:Int;
+	
 	public var width:Int;
 	public var height:Int;
 	public var rooms:List<Room>;
@@ -11,6 +14,10 @@ class Floorplan
 	
 	public function new() 
 	{
+		x = 0;
+		y = 0;
+		width = 10;
+		height = 10;
 		rooms = new List<Room>();
 	}
 	

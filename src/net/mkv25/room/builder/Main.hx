@@ -7,11 +7,6 @@ import flash.events.MouseEvent;
 import flash.Lib;
 import openfl.Assets;
 
-/**
- * ...
- * @author John Beech
- */
-
 class Main extends Sprite 
 {
 	var inited:Bool;
@@ -32,8 +27,14 @@ class Main extends Sprite
 		var viewer = new MapViewer();
 		viewer.setup(40, 20);
 		addChild(viewer.grid);
+		addChild(viewer.paths);
 		
-		stage.addEventListener(MouseEvent.MOUSE_DOWN, viewer.cycleRoomSamples);
+		for (i in 0...6)
+		{
+			viewer.cycleRoomSamples();
+		}
+		
+		viewer.generatePathing();
 	}
 
 	/* SETUP */
