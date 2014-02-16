@@ -20,8 +20,9 @@ class MapViewer
 	public var floorplan:Floorplan;
 	public var pathFinder:PathFinder;
 	
-	var floors:Tileset;
-	var walls:Wallset;
+	var floorPainter:Tileset;
+	var wallPainter:Wallset;
+	var doorPainter:Tileset;
 	
 	var wos:Int = 0;
 	var tos:Int = 0;
@@ -36,8 +37,9 @@ class MapViewer
 		floorplan = new Floorplan();
 		pathFinder = new PathFinder();
 		
-		floors = new Tileset(Tile.WIDTH, Tile.HEIGHT, Assets.getBitmapData('img/g02.png'));
-		walls = new Wallset(Wallpiece.WIDTH, Wallpiece.HEIGHT, Assets.getBitmapData('img/w01.png'));
+		floorPainter = new Tileset(Tile.WIDTH, Tile.HEIGHT, Assets.getBitmapData('img/g02.png'));
+		wallPainter = new Wallset(Wallpiece.WIDTH, Wallpiece.HEIGHT, Assets.getBitmapData('img/w01.png'));
+		doorPainter = new Tileset(Door.WIDTH, Door.HEIGHT, Assets.getBitmapData('img/d01.png'));
 	}
 	
 	public function setup(columns:Int, rows:Int):Void
@@ -100,8 +102,8 @@ class MapViewer
 	
 	public function drawRooms(floorplan:Floorplan):Void
 	{
-		walls.blitOutsideWallBox(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
-		floors.blitTileFill(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
+		wallPainter.blitOutsideWallBox(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
+		floorPainter.blitTileFill(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
 		
 		for (room in floorplan.rooms)
 		{
@@ -125,13 +127,13 @@ class MapViewer
 		var depth = 2;		
 	}
 	
-	public function generateRoom(floorplan:Floorplan, tile:Int, wall:Int, wallpaper:Int, x:Int, y:Int, width:Int, height:Int, depth:Int=2)
+	public function generateRoom(floorplan:Floorplan, tile:Int, wall:Int, wallpaper:Int, x:Int, y:Int, width:Int, height:Int, depth:Int=2):Room
 	{
 		var room = new Room();
 		
-		room.floor = tile;
-		room.walls = wall;
-		room.wallpaper = wallpaper;
+		room.floorType = tile;
+		room.wallType = wall;
+		room.wallpaperType = wallpaper;
 		
 		room.x = x;
 		room.y = y;
@@ -139,7 +141,50 @@ class MapViewer
 		room.height = height;
 		room.depth = depth;
 		
+		generateDoors(room);
+		
 		floorplan.addRoom(room);
+		
+		return room;
+	}
+	
+	public function generateDoors(room:Room):Void
+	{
+		if (room.width > 3 && room.width % 2 == 0)
+		{
+			var leftDoor = new Door();
+			leftDoor.doorType = 5;
+			leftDoor.x = Math.round(room.width / 2) - 1;
+			leftDoor.y = -1;
+			
+			var rightDoor = new Door();
+			rightDoor.doorType = 6;
+			rightDoor.x = Math.round(room.width / 2);
+			rightDoor.y = -1;
+			
+			room.addDoor(leftDoor);
+			room.addDoor(rightDoor);
+		}
+		else
+		{		
+			if (room.width > 2)
+			{
+				var door = new Door();
+				door.doorType = 4;
+				door.x = 1;
+				door.y = -1;
+				room.addDoor(door);
+			}
+			
+			if (room.width > 4)
+			{
+				var door = new Door();
+				door.doorType = 4;
+				door.x = room.width - 2;
+				door.y = -1;
+				room.addDoor(door);
+			}
+		}
 	}
 	
 	public function generateCorridor(floorplan:Floorplan, x:Int, y:Int, width:Int, height:Int, depth:Int = 2)
@@ -157,13 +202,17 @@ class MapViewer
 	
 	public function blitRoom(room:Room)
 	{
-		room.floor = room.floor % 64;
-		room.walls = room.walls % 16;
-		room.wallpaper = room.wallpaper % 16;
+		room.floorType = room.floorType % 64;
+		room.wallType = room.wallType % 16;
+		room.wallpaperType = room.wallpaperType % 16;
 		
-		floors.blitTileFill(room.floor, grid.bitmapData, room.x, room.y, room.width, room.height); 
-		walls.blitWallPaper(room.wallpaper, grid.bitmapData, room.x, room.y - room.depth, room.width, room.depth);
-		walls.blitOutsideWallBox(room.walls, grid.bitmapData, room.x, room.y - room.depth, room.width, room.height + room.depth);
+		floorPainter.blitTileFill(room.floorType, grid.bitmapData, room.x, room.y, room.width, room.height); 
+		wallPainter.blitWallPaper(room.wallpaperType, grid.bitmapData, room.x, room.y - room.depth, room.width, room.depth);
+		wallPainter.blitOutsideWallBox(room.wallType, grid.bitmapData, room.x, room.y - room.depth, room.width, room.height + room.depth);
+		for (door in room.doors)
+		{
+			doorPainter.blitTile(door.doorType, grid.bitmapData, room.x + door.x, (room.y + door.y - 1) / 2);
+		}
 	}
 	
 	public function cycleRoomSamples(?e)

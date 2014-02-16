@@ -20,6 +20,7 @@ class PathFinder
 	
 	var rooms:Int = 0;
 	var corridors:Int = 0;
+	var doors:Int = 0;
 	var nodes:Int = 0;
 	var arcs:Int = 0;
 	
@@ -75,14 +76,21 @@ class PathFinder
 	
 	private function graphRoom(floorplan:Floorplan, room:Room):Void
 	{
-		rooms++;
 		for (j in 0...room.height)
 		{
 			for (i in 0...room.width)
 			{
-				mapTile(floorplan.x + room.x + i, floorplan.y + room.y + j);
+				mapTile(room.x + i, room.y + j);
 			}
 		}
+		
+		for (door in room.doors)
+		{
+			mapTile(room.x + door.x, room.y + door.y);
+			doors++;
+		}
+		
+		rooms++;
 	}
 	
 	private function graphCorridor(floorplan:Floorplan, corridor:Room):Void
@@ -92,7 +100,7 @@ class PathFinder
 		{
 			for (i in 0...corridor.width)
 			{
-				mapTile(floorplan.x + corridor.x + i, floorplan.y + corridor.y + j);
+				mapTile(corridor.x + i, corridor.y + j);
 			}
 		}
 	}
@@ -160,7 +168,6 @@ class PathFinder
 		
 		graph.addSingleArc(tile, target, cost);
 		arcs++;
-		
 	}
 	
 	public function draw(slate:Sprite):Void
@@ -238,6 +245,7 @@ class PathFinder
 	{
 		trace("Rooms: " + rooms);
 		trace("Corridors: " + corridors);
+		trace("Doors: " + doors);
 		trace("Nodes: " + nodes);
 		trace("Arcs: " + arcs);
 	}
