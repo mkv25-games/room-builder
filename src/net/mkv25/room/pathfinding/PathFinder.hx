@@ -10,12 +10,11 @@ import net.mkv25.room.planner.Room;
 import de.polygonal.ds.DA.DA;
 import de.polygonal.ds.Graph.Graph;
 import de.polygonal.ds.GraphNode.GraphNode;
-import de.polygonal.ds.HashMap;
 
 class PathFinder
 {
 	private var graph:Graph<AStarWaypoint>;
-	private var map:HashMap < String, GraphNode<AStarWaypoint> > ;
+	private var map:Map<String, GraphNode<AStarWaypoint> > ;
 	
 	private var astar:AStar;
 	
@@ -26,15 +25,14 @@ class PathFinder
 	public function new() 
 	{
 		graph = new Graph<AStarWaypoint>();
-		map = new HashMap < String, GraphNode<AStarWaypoint> > ();
+		map = new Map<String, GraphNode<AStarWaypoint> > ();
 		astar = new AStar(graph);
 	}
 	
 	public function clear():Void
 	{
 		graph.clear();
-		map.clear();
-		
+		map = new Map<String, GraphNode<AStarWaypoint> > ();
 		rooms = 0;
 		nodes = 0;
 		arcs = 0;
@@ -137,8 +135,30 @@ class PathFinder
 		
 		for (tile in map)
 		{
-			g.beginFill(0xFF0000);
-			g.drawCircle(tile.val.x * scale + offset, tile.val.y * scale + offset, 5);
+			var x = tile.val.x * scale + offset;
+			var y = tile.val.y * scale + offset;
+			
+			var arc = tile.arcList;
+			while (arc != null)
+			{
+				var tx = arc.node.val.x * scale + offset;
+				var ty = arc.node.val.y * scale + offset;
+				g.lineStyle(2, 0x44AA00);
+				g.moveTo(x, y);
+				g.lineTo(tx, ty);
+				
+				arc = arc.next;
+			}
+		}
+		
+		for (tile in map)
+		{
+			var x = tile.val.x * scale + offset;
+			var y = tile.val.y * scale + offset;
+			
+			g.lineStyle(2, 0x44AA00);
+			g.beginFill(0x000000);
+			g.drawCircle(x, y, 5);
 			g.endFill();
 		}
 	}
