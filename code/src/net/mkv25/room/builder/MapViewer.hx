@@ -6,6 +6,7 @@ import flash.display.Sprite;
 import flash.geom.Rectangle;
 import haxe.Timer;
 import net.mkv25.room.pathfinding.PathFinder;
+import net.mkv25.room.planner.Corridor;
 import net.mkv25.room.planner.Floorplan;
 import net.mkv25.room.planner.Room;
 import openfl.Assets;
@@ -13,6 +14,7 @@ import openfl.Assets;
 class MapViewer
 {	
 	public var grid:Bitmap;
+	public var pathgrid:Sprite;
 	public var paths:Sprite;
 	
 	public var floorplan:Floorplan;
@@ -28,6 +30,7 @@ class MapViewer
 	public function new() 
 	{
 		grid = new Bitmap();
+		pathgrid = new Sprite();
 		paths = new Sprite();
 		
 		floorplan = new Floorplan();
@@ -62,6 +65,19 @@ class MapViewer
 		generateRoom(floorplan, 1 + tos, 4 + wos, 3 + wos, 19, 12, 2, 6, 3);
 		generateRoom(floorplan, 2 + tos, 4 + wos, 2 + wos, 22, 12, 9, 6, 3);
 		generateRoom(floorplan, 1 + tos, 4 + wos, 1 + wos, 32, 13, 6, 5, 2);
+		
+		generateCorridor(floorplan, 8, 6, 1, 1);
+		generateCorridor(floorplan, 31, 6, 1, 1);
+		generateCorridor(floorplan, 8, 14, 1, 1);
+		generateCorridor(floorplan, 31, 14, 1, 1);
+		generateCorridor(floorplan, 18, 13, 1, 1);
+		generateCorridor(floorplan, 21, 13, 1, 1);
+		generateCorridor(floorplan, 13, 8, 1, 4);
+		generateCorridor(floorplan, 26, 8, 1, 4);
+		generateCorridor(floorplan, 3, 10, 1, 3);
+		generateCorridor(floorplan, 36, 10, 1, 3);
+		generateCorridor(floorplan, 18, 16, 1, 1);
+		generateCorridor(floorplan, 21, 16, 1, 1);
 		//*/
 		
 		// generateFloorplan(floorplan, 38, 18, 7);
@@ -73,7 +89,13 @@ class MapViewer
 	{
 		pathFinder.graphFloorplan(floorplan);
 		pathFinder.report();
-		pathFinder.draw(paths);
+		pathFinder.draw(pathgrid);
+	}
+	
+	public function pathBetween(x1:Int, y1:Int, x2:Int, y2:Int):Void
+	{
+		var path = pathFinder.findPath(x1, y1, x2, y2);
+		pathFinder.drawPath(paths, path);
 	}
 	
 	public function drawRooms(floorplan:Floorplan):Void
@@ -117,7 +139,20 @@ class MapViewer
 		room.height = height;
 		room.depth = depth;
 		
-		floorplan.rooms.add(room);
+		floorplan.addRoom(room);
+	}
+	
+	public function generateCorridor(floorplan:Floorplan, x:Int, y:Int, width:Int, height:Int, depth:Int = 2)
+	{
+		var corridor = new Corridor();
+		
+		corridor.x = x;
+		corridor.y = y;
+		corridor.width = width;
+		corridor.height = height;
+		corridor.depth = depth;
+		
+		floorplan.addCorridor(corridor);
 	}
 	
 	public function blitRoom(room:Room)
