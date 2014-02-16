@@ -54,7 +54,7 @@ class MapViewer
 		generateRoom(floorplan, 1 + tos, 4 + wos, 1 + wos, 32, 13, 6, 5, 2);
 		//*/
 		
-		//generateFloorplan(floorplan, 38, 18, 7);
+		// generateFloorplan(floorplan, 38, 18, 7);
 		
 		drawRooms(floorplan);
 	}
@@ -78,33 +78,7 @@ class MapViewer
 		floorplan.height = maxHeight;
 		
 		var spacing = 1;
-		var depth = 2;
-		
-		var remainingX:Int = 0;
-		var remainingY:Int = maxHeight - spacing * 2;
-		
-		while (remainingY > depth)
-		{
-			remainingX = maxWidth - spacing * 2;
-			while (remainingX > 0)
-			{
-				var room = new Room();
-				room.x = maxWidth - remainingX;
-				room.y = maxHeight - remainingY + depth;
-				room.width = cast Math.min(roomSize, remainingX);
-				room.height = cast Math.min(roomSize - depth, remainingY);
-				room.depth = depth;
-				
-				room.walls = 5 + wos;
-				room.wallpaper = room.x + wos;
-				room.floor = room.y + tos;
-				
-				floorplan.rooms.add(room);
-				
-				remainingX = remainingX - roomSize - spacing;
-			}
-			remainingY = remainingY - roomSize - spacing;
-		}
+		var depth = 2;		
 	}
 	
 	public function generateRoom(floorplan:Floorplan, tile:Int, wall:Int, wallpaper:Int, x:Int, y:Int, width:Int, height:Int, depth:Int=2)
