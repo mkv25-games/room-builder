@@ -9,6 +9,7 @@ class Floorplan
 	public var width:Int;
 	public var height:Int;
 	public var rooms:List<Room>;
+	public var corridors:List<Corridor>;
 
 	private var filled:Bool;
 	
@@ -19,6 +20,7 @@ class Floorplan
 		width = 10;
 		height = 10;
 		rooms = new List<Room>();
+		corridors = new List<Corridor>();
 	}
 	
 	public function addRoom(room:Room):Bool
@@ -29,6 +31,16 @@ class Floorplan
 			return true;
 		}
 		
+		return false;
+	}
+	
+	public function addCorridor(corridor:Corridor):Bool
+	{
+		if (spaceFor(corridor))
+		{
+			corridors.add(corridor);
+			return true;
+		}
 		return false;
 	}
 	
@@ -53,6 +65,15 @@ class Floorplan
 		for (room in rooms)
 		{
 			r2 = room.dimensions();
+			if (r1.intersects(r2))
+			{
+				return false;
+			}
+		}
+		
+		for (corridor in corridors)
+		{
+			r2 = corridor.dimensions();
 			if (r1.intersects(r2))
 			{
 				return false;
