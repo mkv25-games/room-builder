@@ -37,7 +37,7 @@ class Tileset
 		rows = Math.floor(asset.height / tileHeight);
 	}
 	
-	public function blitTile(index:Int, target:BitmapData, x:Int, y:Int):Void
+	public function blitTile(index:Int, target:BitmapData, x:Float, y:Float):Void
 	{		
 		r1.x = (index % columns) * r1.width;
 		r1.y = Math.floor(index / columns) * r1.height;
