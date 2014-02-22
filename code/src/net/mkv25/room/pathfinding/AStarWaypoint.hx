@@ -64,6 +64,11 @@ class AStarWaypoint implements Heapable<AStarWaypoint>
 	 */
 	public var node:GraphNode<AStarWaypoint>;
 	
+	/**
+	 * A helpful colour for plotting purposes
+	 */
+	public var colour:Int;
+	
 	public function new()
 	{
 		x = 0;
@@ -74,6 +79,7 @@ class AStarWaypoint implements Heapable<AStarWaypoint>
 		heuristic = Math.NaN;
 		onQue = false;
 		node = null;
+		colour = 0x000000;
 	}
 	
 	inline public function reset():Void

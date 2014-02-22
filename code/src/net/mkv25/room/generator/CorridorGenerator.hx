@@ -72,8 +72,8 @@ class CorridorGenerator
 			
 			if (floorplan.hasSpaceAt(sx + vx * i, sy + vy * i) == false)
 			{
-				trace("Corridor conflict at: " + (sx + vx * i) + ", " + (sy + vy * i) + "...");
 				length--;
+				trace("Corridor edge found at: " + (sx + vx * i) + ", " + (sy + vy * i) + " | length " + length);
 				break;
 			}
 			
