@@ -1,9 +1,10 @@
 package net.mkv25.room.planner;
 
 import flash.geom.Rectangle;
-import net.mkv25.room.builder.Door;
+import net.mkv25.room.api.IFloorplanTileable;
+import net.mkv25.room.planner.Door;
 
-class Room
+class Room implements IFloorplanTileable
 {
 	public var x:Int;
 	public var y:Int;
@@ -38,5 +39,20 @@ class Room
 	public function addDoor(door:Door):Void
 	{
 		doors.push(door);
+	}
+	
+	public function mapTo(map:FloorplanMap):Void
+	{
+		for (j in 0...height)
+		{
+			for (i in 0...width) {
+				map.set(x + i, y + j, this);
+			}
+		}
+		
+		for (door in doors)
+		{
+			door.mapTo(map);
+		}
 	}
 }

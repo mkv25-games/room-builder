@@ -17,9 +17,16 @@ class Main extends Sprite
 	{
 		if (!inited) init();
 		// else (resize or orientation change)
+		
+		if (slate != null)
+		{
+			slate.x = stage.stageWidth / 2 - slate.width / 2;
+			slate.y = stage.stageHeight / 2 - slate.height / 2;
+		}
 	}
 	
 	var viewer:MapViewer;
+	var slate:Sprite;
 	
 	function init() 
 	{
@@ -28,9 +35,13 @@ class Main extends Sprite
 		
 		viewer = new MapViewer();
 		viewer.setup(40, 20);
-		addChild(viewer.grid);
-		addChild(viewer.pathgrid);
-		addChild(viewer.paths);
+		
+		slate = new Sprite();
+		slate.addChild(viewer.grid);
+		slate.addChild(viewer.pathgrid);
+		slate.addChild(viewer.paths);
+		
+		addChild(slate);
 		
 		for (i in 0...6)
 		{
@@ -43,10 +54,13 @@ class Main extends Sprite
 	
 	var lastX:Int = -1;
 	var lastY:Int = -1;
+	var dragX:Float = -1;
+	var dragY:Float = -1;
+	var mouseDown:Bool = false;
 	function onMouseDown(e)
 	{
-		var x:Int = Math.floor(stage.mouseX / 32);
-		var y:Int = Math.floor(stage.mouseY / 32);
+		var x:Int = Math.floor(slate.mouseX / 32);
+		var y:Int = Math.floor(slate.mouseY / 32);
 		
 		trace("Tile: " + x + ", " + y);
 		
@@ -62,8 +76,26 @@ class Main extends Sprite
 			lastY = y;
 			viewer.pathBetween(x, y, lastX, lastY);
 		}
+		
+		mouseDown = true;
+		stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		dragX = slate.x - stage.mouseX;
+		dragY = slate.y - stage.mouseY;
+	}
+	
+	function onMouseMove(e)
+	{
+		slate.x = dragX + stage.mouseX;
+		slate.y = dragY + stage.mouseY;
 	}
 
+	function onMouseUp(e)
+	{
+		stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+	}
+	
 	/* SETUP */
 
 	public function new() 

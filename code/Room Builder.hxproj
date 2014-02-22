@@ -17,6 +17,9 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
+    <class path="externals\polygonal-ds\src" />
+    <class path="externals\polygonal-core\src" />
+    <class path="externals\polygonal-printf\src" />
     <class path="bin\flash\haxe" />
   </classpaths>
   <!-- Build options -->
