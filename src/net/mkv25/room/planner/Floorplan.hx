@@ -8,7 +8,7 @@ class Floorplan
 	public var rooms:List<Room>;
 	public var corridors:List<Corridor>;
 
-	private var filled:Bool;
+	var map:FloorplanMap;
 	
 	public function new() 
 	{
@@ -16,6 +16,8 @@ class Floorplan
 		height = 10;
 		rooms = new List<Room>();
 		corridors = new List<Corridor>();
+		
+		map = new FloorplanMap(this);
 	}
 	
 	public function addRoom(room:Room):Bool
@@ -23,6 +25,7 @@ class Floorplan
 		if (spaceFor(room))
 		{
 			rooms.add(room);
+			room.mapTo(map);
 			return true;
 		}
 		
@@ -34,6 +37,7 @@ class Floorplan
 		if (spaceFor(corridor))
 		{
 			corridors.add(corridor);
+			corridor.mapTo(map);
 			return true;
 		}
 		return false;
@@ -41,15 +45,24 @@ class Floorplan
 	
 	public function removeAllRooms():Void
 	{
+		map.reset();
+		
 		while (rooms.length > 0)
 		{
 			rooms.pop();
 		}
+		
+		while (corridors.length > 0)
+		{
+			corridors.pop();
+		}
 	}
 	
-	public function hasSpace():Bool
+	public function hasSpaceAt(x:Int, y:Int):Bool
 	{
-		return !filled;
+		var tile = map.get(x, y);
+		
+		return (tile == null);
 	}
 	
 	public function spaceFor(check:Room):Bool
