@@ -13,6 +13,10 @@ import de.polygonal.ds.GraphNode.GraphNode;
 
 class PathFinder
 {
+	private static inline var ROOM_COLOUR:Int = 0x66AA00;
+	private static inline var DOOR_COLOUR:Int = 0xDD3300;
+	private static inline var CORRIDOR_COLOUR:Int = 0x777777;
+	
 	private var graph:Graph<AStarWaypoint>;
 	private var map:Map<String, GraphNode<AStarWaypoint> > ;
 	
@@ -80,13 +84,13 @@ class PathFinder
 		{
 			for (i in 0...room.width)
 			{
-				mapTile(room.x + i, room.y + j);
+				mapTile(room.x + i, room.y + j, ROOM_COLOUR);
 			}
 		}
 		
 		for (door in room.doors)
 		{
-			mapTile(room.x + door.x, room.y + door.y);
+			mapTile(room.x + door.x, room.y + door.y, DOOR_COLOUR);
 			doors++;
 		}
 		
@@ -100,12 +104,12 @@ class PathFinder
 		{
 			for (i in 0...corridor.width)
 			{
-				mapTile(corridor.x + i, corridor.y + j);
+				mapTile(corridor.x + i, corridor.y + j, CORRIDOR_COLOUR);
 			}
 		}
 	}
 	
-	private function mapTile(tilex:Int, tiley:Int):Void
+	private function mapTile(tilex:Int, tiley:Int, colour:Int=0x000000):Void
 	{
 		var waypoint = new AStarWaypoint();
 		waypoint.x = tilex;
@@ -114,6 +118,7 @@ class PathFinder
 		
 		var node = new GraphNode<AStarWaypoint>(graph, waypoint);
 		waypoint.node = node;
+		waypoint.colour = colour;
 		
 		graph.addNode(node);
 		nodes++;
@@ -188,7 +193,7 @@ class PathFinder
 			{
 				var tx = arc.node.val.x * scale + offset;
 				var ty = arc.node.val.y * scale + offset;
-				g.lineStyle(2, 0x44AA00);
+				g.lineStyle(2, tile.val.colour);
 				g.moveTo(x, y);
 				g.lineTo(tx, ty);
 				
@@ -201,7 +206,7 @@ class PathFinder
 			var x = tile.val.x * scale + offset;
 			var y = tile.val.y * scale + offset;
 			
-			g.lineStyle(2, 0x44AA00);
+			g.lineStyle(2, tile.val.colour);
 			g.beginFill(0x000000);
 			g.drawCircle(x, y, 5);
 			g.endFill();
