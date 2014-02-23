@@ -28,6 +28,8 @@ class MapViewer
 	var wallPainter:Wallset;
 	var doorPainter:Tileset;
 	
+	var drawPathingInfo:Bool = false;
+	
 	public function new() 
 	{
 		grid = new Bitmap();
@@ -56,13 +58,36 @@ class MapViewer
 	{
 		pathFinder.graphFloorplan(floorplan);
 		pathFinder.report();
-		pathFinder.draw(pathgrid);
+		
+		if (drawPathingInfo)
+		{
+			pathFinder.draw(pathgrid);
+		}
+	}
+	
+	public function togglePathingInfo():Void
+	{
+		drawPathingInfo = !drawPathingInfo;
+		
+		if (drawPathingInfo)
+		{
+			pathFinder.draw(pathgrid);
+		}
+		else
+		{
+			pathgrid.graphics.clear();
+			paths.graphics.clear();
+		}
 	}
 	
 	public function pathBetween(x1:Int, y1:Int, x2:Int, y2:Int):Void
 	{
 		var path = pathFinder.findPath(x1, y1, x2, y2);
-		pathFinder.drawPath(paths, path);
+		
+		if (drawPathingInfo)
+		{
+			pathFinder.drawPath(paths, path);
+		}
 	}
 	
 	public function drawRooms(floorplan:Floorplan):Void
@@ -74,11 +99,6 @@ class MapViewer
 		{
 			blitRoom(room);
 		}
-	}
-	
-	public function drawPaths():Void
-	{
-		pathFinder.draw(paths);
 	}
 	
 	public function blitRoom(room:Room)

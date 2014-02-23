@@ -3,8 +3,11 @@ package net.mkv25.room.builder;
 import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.events.Event;
+import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.Lib;
+import flash.ui.Keyboard;
+import haxe.Timer;
 import openfl.Assets;
 
 class Main extends Sprite 
@@ -50,14 +53,26 @@ class Main extends Sprite
 		
 		viewer.generatePathing();
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+	}
+	
+	function onMouseDown(e)
+	{
+		pathBetweenPoints();
+		beginDrag();	
+	}
+	
+	function onKeyDown(e:KeyboardEvent):Void
+	{
+		if (e.keyCode == Keyboard.M && e.ctrlKey)
+		{
+			viewer.togglePathingInfo();
+		}
 	}
 	
 	var lastX:Int = -1;
 	var lastY:Int = -1;
-	var dragX:Float = -1;
-	var dragY:Float = -1;
-	var mouseDown:Bool = false;
-	function onMouseDown(e)
+	function pathBetweenPoints():Void
 	{
 		var x:Int = Math.floor(slate.mouseX / 32);
 		var y:Int = Math.floor(slate.mouseY / 32);
@@ -76,24 +91,31 @@ class Main extends Sprite
 			lastY = y;
 			viewer.pathBetween(x, y, lastX, lastY);
 		}
-		
+	}
+	
+	var dragX:Float = -1;
+	var dragY:Float = -1;
+	var mouseDown:Bool = false;
+	function beginDrag():Void
+	{
 		mouseDown = true;
-		stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-		stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		stage.addEventListener(MouseEvent.MOUSE_MOVE, updateDrag);
+		stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
 		dragX = slate.x - stage.mouseX;
 		dragY = slate.y - stage.mouseY;
 	}
 	
-	function onMouseMove(e)
+	function updateDrag(e)
 	{
 		slate.x = dragX + stage.mouseX;
 		slate.y = dragY + stage.mouseY;
 	}
 
-	function onMouseUp(e)
+	function endDrag(e)
 	{
-		stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		stage.removeEventListener(MouseEvent.MOUSE_MOVE, updateDrag);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, endDrag);
+		mouseDown = false;
 	}
 	
 	/* SETUP */
