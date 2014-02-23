@@ -28,6 +28,8 @@ class MapViewer
 	public var pathFinder:PathFinder;
 	public var generator:FloorplanGenerator;
 	
+	public var baseColour:Int = 0xFFAAAAAA;
+	
 	var floorPainter:Tileset;
 	var wallPainter:Wallset;
 	var doorPainter:Tileset;
@@ -53,12 +55,12 @@ class MapViewer
 	{
 		grid.bitmapData = new BitmapData(columns * Tile.WIDTH, rows * Tile.HEIGHT);
 		
-		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), 0xFFAAAAAA);
+		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), baseColour);
 	}
 	
 	public function generateNewFloorplan():Void
 	{
-		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), 0xFFAAAAAA);
+		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), baseColour);
 		generator.generateFloorplan(floorplan);
 		drawRooms(floorplan);
 	}
