@@ -8,6 +8,7 @@ import flash.events.MouseEvent;
 import flash.Lib;
 import flash.ui.Keyboard;
 import haxe.Timer;
+import net.mkv25.room.viewer.MapViewer;
 import openfl.Assets;
 
 class Main extends Sprite 
