@@ -26,14 +26,55 @@ class RoomGenerator
 		room.height = height;
 		room.depth = depth;
 		
-		generateDoors(room);
+		generateSideWallDoors(room);
+		generateNorthWallDoors(room);
 		
 		floorplan.addRoom(room);
 		
 		return room;
 	}
 	
-	function generateDoors(room:Room):List<Door>
+	function generateSideWallDoors(room:Room):Void
+	{
+		generateSideWallDoorsHelper(room, room.width, DoorDirectionEnum.East);
+		generateSideWallDoorsHelper(room, -1, DoorDirectionEnum.West);
+	}
+	
+	function generateSideWallDoorsHelper(room:Room, wallx:Int, direction:DoorDirectionEnum):Void
+	{
+		if (room.height > 3 && room.height % 2 == 0)
+		{
+			var topDoor = new Door(room);
+			topDoor.doorType = 0;
+			topDoor.x = wallx;  
+			topDoor.y = Math.round(room.height / 2) - 1;
+			topDoor.direction = direction;
+			
+			var bottomDoor = new Door(room);
+			bottomDoor.doorType = 0;
+			bottomDoor.x = wallx;
+			bottomDoor.y = Math.round(room.height / 2);
+			bottomDoor.direction = direction;
+			
+			room.addDoor(topDoor);
+			room.addDoor(bottomDoor);
+		}
+		else
+		{
+			if (room.width > 2)
+			{
+				var door = new Door(room);
+				door.doorType = 0;
+				door.x = wallx;
+				door.y = Math.floor(room.height / 2);
+				door.direction = direction;
+				
+				room.addDoor(door);
+			}
+		}
+	}
+	
+	function generateNorthWallDoors(room:Room):Void
 	{
 		if (room.width > 3 && room.width % 2 == 0)
 		{
@@ -41,11 +82,13 @@ class RoomGenerator
 			leftDoor.doorType = 5;
 			leftDoor.x = Math.round(room.width / 2) - 1;
 			leftDoor.y = -1;
+			leftDoor.direction = DoorDirectionEnum.North;
 			
 			var rightDoor = new Door(room);
 			rightDoor.doorType = 6;
 			rightDoor.x = Math.round(room.width / 2);
 			rightDoor.y = -1;
+			rightDoor.direction = DoorDirectionEnum.North;
 			
 			room.addDoor(leftDoor);
 			room.addDoor(rightDoor);
@@ -58,6 +101,8 @@ class RoomGenerator
 				door.doorType = 4;
 				door.x = 1;
 				door.y = -1;
+				door.direction = DoorDirectionEnum.North;
+				
 				room.addDoor(door);
 			}
 			
@@ -67,11 +112,11 @@ class RoomGenerator
 				door.doorType = 4;
 				door.x = room.width - 2;
 				door.y = -1;
+				door.direction = DoorDirectionEnum.North;
+				
 				room.addDoor(door);
 			}
 		}
-		
-		return room.doors;
 	}
 	
 }
