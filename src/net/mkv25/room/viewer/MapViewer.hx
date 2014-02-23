@@ -54,8 +54,13 @@ class MapViewer
 		grid.bitmapData = new BitmapData(columns * Tile.WIDTH, rows * Tile.HEIGHT);
 		
 		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), 0xFFAAAAAA);
-		
+	}
+	
+	public function generateNewFloorplan():Void
+	{
+		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), 0xFFAAAAAA);
 		generator.generateFloorplan(floorplan);
+		drawRooms(floorplan);
 	}
 	
 	public function generatePathing():Void
@@ -120,15 +125,11 @@ class MapViewer
 		}
 	}
 	
-	public function cycleRoomSamples(?e)
+	public function cycleRoomSamples()
 	{
-		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), 0xFFAAAAAA);
-		
 		generator.tos = (generator.tos + 1) % 32;
 		generator.wos = (generator.wos + 1) % 16;
 		
-		generator.generateFloorplan(floorplan);
-		drawRooms(floorplan);
+		generateNewFloorplan();
 	}
-	
 }
