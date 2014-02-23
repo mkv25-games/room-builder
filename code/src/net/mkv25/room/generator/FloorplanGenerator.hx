@@ -6,8 +6,8 @@ import net.mkv25.room.planner.Floorplan;
 
 class FloorplanGenerator
 {
-	public var wos:Int = 0;
-	public var tos:Int = 0;
+	public var wos:Int = 6;
+	public var tos:Int = 6;
 	
 	var roomGenerator:RoomGenerator;
 	var corridorGenerator:CorridorGenerator;
