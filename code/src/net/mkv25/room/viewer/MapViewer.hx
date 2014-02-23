@@ -1,4 +1,4 @@
-package net.mkv25.room.builder;
+package net.mkv25.room.viewer;
 
 import flash.display.Bitmap;
 import flash.display.BitmapData;
@@ -6,6 +6,10 @@ import flash.display.Graphics;
 import flash.display.Sprite;
 import flash.geom.Rectangle;
 import haxe.Timer;
+import net.mkv25.room.builder.Tile;
+import net.mkv25.room.builder.Tileset;
+import net.mkv25.room.builder.Wallpiece;
+import net.mkv25.room.builder.Wallset;
 import net.mkv25.room.generator.FloorplanGenerator;
 import net.mkv25.room.pathfinding.PathFinder;
 import net.mkv25.room.planner.Corridor;
