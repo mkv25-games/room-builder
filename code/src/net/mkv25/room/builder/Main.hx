@@ -31,6 +31,7 @@ class Main extends Sprite
 		inited = true;
 		
 		viewer = new MapViewer();
+		viewer.baseColour = 0xFF000000;
 		viewer.setup(40, 20);
 		
 		slate = new MapSlate(stage, viewer);
