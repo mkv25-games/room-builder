@@ -25,11 +25,7 @@ class MapBlitter implements Blittable
 	public var layer:Int;
 	public var dirty:Bool;
 	
-	public var pathgrid:Sprite;
-	public var paths:Sprite;
-	
 	public var floorplan:Floorplan;
-	public var pathFinder:PathFinder;
 	public var generator:FloorplanGenerator;
 	
 	public var baseColour:Int = 0xFFAAAAAA;
@@ -38,8 +34,6 @@ class MapBlitter implements Blittable
 	var wallPainter:Wallset;
 	var doorPainter:Tileset;
 	
-	var drawPathingInfo:Bool = false;
-	
 	public function new() 
 	{
 		artwork = new Bitmap();
@@ -47,11 +41,7 @@ class MapBlitter implements Blittable
 		layer = 0;
 		dirty = false;
 		
-		pathgrid = new Sprite();
-		paths = new Sprite();
-		
 		floorplan = new Floorplan();
-		pathFinder = new PathFinder();
 		generator = new FloorplanGenerator();
 		
 		floorPainter = new Tileset(Tile.WIDTH, Tile.HEIGHT, Assets.getBitmapData('img/g02.png'));
@@ -74,52 +64,9 @@ class MapBlitter implements Blittable
 		dirty = true;
 	}
 	
-	public function generatePathing():Void
-	{
-		pathFinder.graphFloorplan(floorplan);
-		pathFinder.report();
-		
-		if (drawPathingInfo)
-		{
-			pathFinder.draw(pathgrid);
-		}
-	}
-	
-	public function togglePathingInfo():Void
-	{
-		drawPathingInfo = !drawPathingInfo;
-		
-		if (drawPathingInfo)
-		{
-			pathFinder.draw(pathgrid);
-		}
-		else
-		{
-			pathgrid.graphics.clear();
-			paths.graphics.clear();
-		}
-		
-		dirty = true;
-	}
-	
-	public function pathBetween(x1:Int, y1:Int, x2:Int, y2:Int):Void
-	{
-		var path = pathFinder.findPath(x1, y1, x2, y2);
-		
-		if (drawPathingInfo)
-		{
-			pathFinder.drawPath(paths, path);
-		}
-		
-		dirty = true;
-	}
-	
 	public function redraw():Void
 	{
 		drawRooms(floorplan);
-		
-		artwork.bitmapData.draw(pathgrid);
-		artwork.bitmapData.draw(paths);
 		
 		dirty = false;
 	}

@@ -43,6 +43,8 @@ class Viewport
 		
 		slate.addChild(artwork);
 		stage.addChild(slate);
+		
+		resize();
 	}
 	
 	public function resize()
