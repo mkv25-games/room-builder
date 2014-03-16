@@ -39,8 +39,8 @@ class Main extends Sprite
 		Log.trace = nullTrace;
 		#end
 		
-		blitter = new Blitter();
-		viewport = new Viewport(stage, blitter);
+		viewport = new Viewport(stage);
+		blitter = new Blitter(viewport);
 		
 		map = new MapBlitter();
 		map.baseColour = 0xFF000000;
@@ -52,7 +52,7 @@ class Main extends Sprite
 		map.generatePathing();
 		
 		pathingHandler = new MapPathingHandler(stage, viewport, map);
-		dragHandler = new ViewportDragHandler(stage, blitter);
+		dragHandler = new ViewportDragHandler(stage, viewport);
 		
 		viewport.resize();
 	}
@@ -76,6 +76,7 @@ class Main extends Sprite
 	{
 		super();	
 		addEventListener(Event.ADDED_TO_STAGE, added);
+		addEventListener(Event.ENTER_FRAME, enterFrame);
 	}
 
 	function added(e) 
@@ -87,6 +88,11 @@ class Main extends Sprite
 		#else
 		init();
 		#end
+	}
+	
+	function enterFrame(e)
+	{
+		blitter.redraw();
 	}
 	
 	public static function main() 

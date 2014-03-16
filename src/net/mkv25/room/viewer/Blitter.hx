@@ -8,53 +8,37 @@ import haxe.ds.IntMap.IntMap;
 
 class Blitter
 {
-	public var artwork:Bitmap;
-	public var baseColour:Int;
+	var viewport:Viewport;
 	
-	public var centerx:Int;
-	public var centery:Int;
-	
-	public var viewx:Int;
-	public var viewy:Int;
+	var layers:IntMap<BlittableLayer>;
 	
 	var boundary:Rectangle;
 	var box:Rectangle;
 	var sourceRectangle:Rectangle;
 	var copyPoint:Point;
 	
-	var layers:IntMap<BlittableLayer>;
+	var layerCount:Int;
+	var itemCount:Int;
+	var drawCount:Int;
 
-	public function new() 
+	public function new(viewport:Viewport) 
 	{
-		artwork = new Bitmap(null, PixelSnapping.ALWAYS, false);
-		baseColour = 0xFFAA5555;
+		this.viewport = viewport;
 		
-		centerx = 0;
-		centery = 0;
-		
-		viewx = 0;
-		viewy = 0;
+		layers = new IntMap<BlittableLayer>();
 		
 		boundary = new Rectangle();
 		box = new Rectangle();
 		sourceRectangle = new Rectangle();
 		copyPoint = new Point();
 		
-		layers = new IntMap<BlittableLayer>();
+		layerCount = 0;
+		itemCount = 0;
+		drawCount = 0;
 		
 		trace("Created Blitter");
 	}
 
-	public function resize(width:Int, height:Int):Void
-	{
-		artwork.bitmapData = new BitmapData(width, height, false, baseColour);
-		
-		centerx = Std.int(width / 2);
-		centery = Std.int(height / 2);
-		
-		trace("Resized Blitter");
-	}
-	
 	public function add(renderItem:Blittable):Void
 	{
 		var layer:BlittableLayer = layers.get(renderItem.layer);
@@ -79,19 +63,16 @@ class Blitter
 		layer.remove(renderItem);
 	}
 	
-	public function clear():Void
-	{
-		artwork.bitmapData.fillRect(new Rectangle(0, 0, artwork.width, artwork.height), baseColour);
-	}
-	
-	var layerCount:Int;
-	var itemCount:Int;
-	var drawCount:Int;
 	public function redraw():Void
 	{
 		layerCount = 0;
 		itemCount = 0;
 		drawCount = 0;
+		
+		if (viewport.requestClear)
+		{
+			viewport.clear();
+		}
 		
 		updateBoundary();
 		
@@ -106,14 +87,14 @@ class Blitter
 	
 	inline function updateBoundary():Void
 	{
-		var width = artwork.bitmapData.width;
-		var height = artwork.bitmapData.height;
+		var width = viewport.artwork.bitmapData.width;
+		var height = viewport.artwork.bitmapData.height;
 		
 		var hw = width / 2;
 		var hh = height / 2;
 		
-		boundary.x = - viewx - centerx;
-		boundary.y = - viewy - centery;
+		boundary.x = - viewport.viewx - viewport.centerx;
+		boundary.y = - viewport.viewy - viewport.centery;
 		boundary.width = width;
 		boundary.height = height;
 	}
@@ -126,17 +107,17 @@ class Blitter
 		// draw box for draw count
 		box.x = 5;
 		box.y = 5;
-		artwork.bitmapData.fillRect(box, (drawCount > 0) ? 0xFFFFFF : 0x000000);
+		viewport.artwork.bitmapData.fillRect(box, (drawCount > 0) ? 0xFFFFFF : 0x000000);
 			
 		// draw box for layer count
 		box.x = 15;
 		box.y = 5;
-		artwork.bitmapData.fillRect(box, (layerCount > 0) ? 0xFFFFFF : 0x000000);
+		viewport.artwork.bitmapData.fillRect(box, (layerCount > 0) ? 0xFFFFFF : 0x000000);
 		
 		// draw box for item count
 		box.x = 25;
 		box.y = 5;
-		artwork.bitmapData.fillRect(box, (itemCount > 0) ? 0xFFFFFF : 0x000000);
+		viewport.artwork.bitmapData.fillRect(box, (itemCount > 0) ? 0xFFFFFF : 0x000000);
 	}
 	
 	public function render(item:Blittable):Void
@@ -160,12 +141,11 @@ class Blitter
 			sourceRectangle.width = box.width;
 			sourceRectangle.height = box.height;
 			
-			copyPoint.x = box.x + viewx + centerx;
-			copyPoint.y = box.y + viewy + centery;
+			copyPoint.x = box.x - boundary.x;  // + viewport.viewx + viewport.centerx;
+			copyPoint.y = box.y - boundary.y; // + viewport.viewy + viewport.centery;
 			
-			artwork.bitmapData.copyPixels(item.artwork.bitmapData, sourceRectangle, copyPoint, null, null, true);
+			viewport.artwork.bitmapData.copyPixels(item.artwork.bitmapData, sourceRectangle, copyPoint, null, null, true);
 			drawCount++;
-		
 		}
 	}
 }
