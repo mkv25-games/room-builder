@@ -3,19 +3,19 @@ import flash.display.Sprite;
 import flash.display.Stage;
 import flash.events.MouseEvent;
 
-class MapDragHandler
+class ViewportDragHandler
 {
 	var stage:Stage;
-	var slate:Sprite;
+	var blitter:Blitter;
 
 	var dragX:Float = -1;
 	var dragY:Float = -1;
 	var mouseDown:Bool = false;
 	
-	public function new(stage:Stage, slate:Sprite) 
+	public function new(stage:Stage, blitter:Blitter) 
 	{
 		this.stage = stage;
-		this.slate = slate;
+		this.blitter = blitter;
 		
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 	}
@@ -30,14 +30,17 @@ class MapDragHandler
 		mouseDown = true;
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, updateDrag);
 		stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
-		dragX = slate.x - stage.mouseX;
-		dragY = slate.y - stage.mouseY;
+		dragX = blitter.viewx - stage.mouseX;
+		dragY = blitter.viewy - stage.mouseY;
 	}
 	
 	function updateDrag(e)
 	{
-		slate.x = dragX + stage.mouseX;
-		slate.y = dragY + stage.mouseY;
+		blitter.viewx = Std.int(dragX + stage.mouseX);
+		blitter.viewy = Std.int(dragY + stage.mouseY);
+		
+		blitter.clear();
+		blitter.redraw();
 	}
 
 	function endDrag(e)

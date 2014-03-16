@@ -18,9 +18,13 @@ import net.mkv25.room.planner.Floorplan;
 import net.mkv25.room.planner.Room;
 import openfl.Assets;
 
-class MapViewer
+class MapBlitter implements Blittable
 {	
-	public var grid:Bitmap;
+	public var artwork:Bitmap;
+	public var frame:Int;
+	public var layer:Int;
+	public var dirty:Bool;
+	
 	public var pathgrid:Sprite;
 	public var paths:Sprite;
 	
@@ -38,7 +42,11 @@ class MapViewer
 	
 	public function new() 
 	{
-		grid = new Bitmap();
+		artwork = new Bitmap();
+		frame = 0;
+		layer = 0;
+		dirty = false;
+		
 		pathgrid = new Sprite();
 		paths = new Sprite();
 		
@@ -53,16 +61,17 @@ class MapViewer
 	
 	public function setup(columns:Int, rows:Int):Void
 	{
-		grid.bitmapData = new BitmapData(columns * Tile.WIDTH, rows * Tile.HEIGHT);
+		artwork.bitmapData = new BitmapData(columns * Tile.WIDTH, rows * Tile.HEIGHT, false, baseColour);
 		
-		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), baseColour);
+		dirty = true;
 	}
 	
 	public function generateNewFloorplan():Void
 	{
-		grid.bitmapData.fillRect(new Rectangle(0, 0, grid.width, grid.height), baseColour);
+		artwork.bitmapData.fillRect(new Rectangle(0, 0, artwork.width, artwork.height), baseColour);
 		generator.generateFloorplan(floorplan);
-		drawRooms(floorplan);
+		
+		dirty = true;
 	}
 	
 	public function generatePathing():Void
@@ -89,6 +98,8 @@ class MapViewer
 			pathgrid.graphics.clear();
 			paths.graphics.clear();
 		}
+		
+		dirty = true;
 	}
 	
 	public function pathBetween(x1:Int, y1:Int, x2:Int, y2:Int):Void
@@ -99,12 +110,24 @@ class MapViewer
 		{
 			pathFinder.drawPath(paths, path);
 		}
+		
+		dirty = true;
 	}
 	
-	public function drawRooms(floorplan:Floorplan):Void
+	public function redraw():Void
 	{
-		wallPainter.blitOutsideWallBox(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
-		floorPainter.blitTileFill(0, grid.bitmapData, 1, 1, floorplan.width, floorplan.height);
+		drawRooms(floorplan);
+		
+		artwork.bitmapData.draw(pathgrid);
+		artwork.bitmapData.draw(paths);
+		
+		dirty = false;
+	}
+	
+	function drawRooms(floorplan:Floorplan):Void
+	{
+		wallPainter.blitOutsideWallBox(0, artwork.bitmapData, 1, 1, floorplan.width, floorplan.height);
+		floorPainter.blitTileFill(0, artwork.bitmapData, 1, 1, floorplan.width, floorplan.height);
 		
 		for (room in floorplan.rooms)
 		{
@@ -112,18 +135,18 @@ class MapViewer
 		}
 	}
 	
-	public function blitRoom(room:Room)
+	function blitRoom(room:Room)
 	{
 		room.floorType = room.floorType % 64;
 		room.wallType = room.wallType % 16;
 		room.wallpaperType = room.wallpaperType % 16;
 		
-		floorPainter.blitTileFill(room.floorType, grid.bitmapData, room.x, room.y, room.width, room.height); 
-		wallPainter.blitWallPaper(room.wallpaperType, grid.bitmapData, room.x, room.y - room.depth, room.width, room.depth);
-		wallPainter.blitOutsideWallBox(room.wallType, grid.bitmapData, room.x, room.y - room.depth, room.width, room.height + room.depth);
+		floorPainter.blitTileFill(room.floorType, artwork.bitmapData, room.x, room.y, room.width, room.height); 
+		wallPainter.blitWallPaper(room.wallpaperType, artwork.bitmapData, room.x, room.y - room.depth, room.width, room.depth);
+		wallPainter.blitOutsideWallBox(room.wallType, artwork.bitmapData, room.x, room.y - room.depth, room.width, room.height + room.depth);
 		for (door in room.doors)
 		{
-			doorPainter.blitTile(door.doorType, grid.bitmapData, room.x + door.x, (room.y + door.y - 1) / 2);
+			doorPainter.blitTile(door.doorType, artwork.bitmapData, room.x + door.x, (room.y + door.y - 1) / 2);
 		}
 	}
 	
