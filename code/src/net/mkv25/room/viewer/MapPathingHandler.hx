@@ -10,7 +10,7 @@ class MapPathingHandler
 {
 	var stage:Stage;
 	var viewport:Viewport;
-	var mapBlitter:MapBlitter;
+	var pathgrid:PathGrid;
 	
 	var lastX:Int = -1;
 	var lastY:Int = -1;
@@ -18,11 +18,11 @@ class MapPathingHandler
 	var mouseX:Float = 0;
 	var mouseY:Float = 0;
 	
-	public function new(stage:Stage, viewport:Viewport, mapBlitter:MapBlitter) 
+	public function new(stage:Stage, viewport:Viewport, pathgrid:PathGrid) 
 	{
 		this.stage = stage;
 		this.viewport = viewport;
-		this.mapBlitter = mapBlitter;
+		this.pathgrid = pathgrid;
 		
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
@@ -46,7 +46,7 @@ class MapPathingHandler
 	{
 		if (e.keyCode == Keyboard.M && e.ctrlKey)
 		{
-			mapBlitter.togglePathingInfo();
+			pathgrid.togglePathingInfo();
 		}
 	}
 	
@@ -65,7 +65,7 @@ class MapPathingHandler
 		
 		if (lastX != -1 && lastY != -1)
 		{
-			mapBlitter.pathBetween(x, y, lastX, lastY);
+			pathgrid.pathBetween(x, y, lastX, lastY);
 			lastX = -1;
 			lastY = -1;
 		}
@@ -73,7 +73,7 @@ class MapPathingHandler
 		{
 			lastX = x;
 			lastY = y;
-			mapBlitter.pathBetween(x, y, lastX, lastY);
+			pathgrid.pathBetween(x, y, lastX, lastY);
 		}
 	}
 }

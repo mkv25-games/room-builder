@@ -10,7 +10,9 @@ import flash.ui.Keyboard;
 import haxe.Log;
 import haxe.PosInfos;
 import haxe.Timer;
+import net.mkv25.room.pathfinding.PathFinder;
 import net.mkv25.room.viewer.Blitter;
+import net.mkv25.room.viewer.PathGrid;
 import net.mkv25.room.viewer.ViewportDragHandler;
 import net.mkv25.room.viewer.MapPathingHandler;
 import net.mkv25.room.viewer.Viewport;
@@ -26,6 +28,9 @@ class Main extends Sprite
 	var viewport:Viewport;
 	var blitter:Blitter;
 	var map:MapBlitter;
+	var pathfinder:PathFinder;
+	var pathgrid:PathGrid;
+	
 	var pathingHandler:MapPathingHandler;
 	var dragHandler:ViewportDragHandler;
 	
@@ -39,22 +44,29 @@ class Main extends Sprite
 		Log.trace = nullTrace;
 		#end
 		
+		// create blitter and viewport
 		viewport = new Viewport(stage);
 		blitter = new Blitter(viewport);
 		
+		// create map
 		map = new MapBlitter();
 		map.baseColour = 0xFF000000;
 		map.setup(40, 20);
-		
 		blitter.add(map);
 		
+		// create path finding
+		pathfinder = new PathFinder();
+		pathgrid = new PathGrid(pathfinder);
+		pathgrid.setup(40, 20);
+		blitter.add(pathgrid);
+		
+		// do stuff with map
 		map.generateNewFloorplan();
-		map.generatePathing();
+		pathgrid.generatePathing(map.floorplan);
 		
-		pathingHandler = new MapPathingHandler(stage, viewport, map);
+		// create handler
+		pathingHandler = new MapPathingHandler(stage, viewport, pathgrid);
 		dragHandler = new ViewportDragHandler(stage, viewport);
-		
-		viewport.resize();
 	}
 	
 	function nullTrace(v:Dynamic, ?inf:PosInfos)
