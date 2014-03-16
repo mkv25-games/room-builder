@@ -6,16 +6,16 @@ import flash.events.MouseEvent;
 class ViewportDragHandler
 {
 	var stage:Stage;
-	var blitter:Blitter;
+	var viewport:Viewport;
 
 	var dragX:Float = -1;
 	var dragY:Float = -1;
 	var mouseDown:Bool = false;
 	
-	public function new(stage:Stage, blitter:Blitter) 
+	public function new(stage:Stage, viewport:Viewport) 
 	{
 		this.stage = stage;
-		this.blitter = blitter;
+		this.viewport = viewport;
 		
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 	}
@@ -30,17 +30,16 @@ class ViewportDragHandler
 		mouseDown = true;
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, updateDrag);
 		stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
-		dragX = blitter.viewx - stage.mouseX;
-		dragY = blitter.viewy - stage.mouseY;
+		dragX = viewport.viewx - stage.mouseX;
+		dragY = viewport.viewy - stage.mouseY;
 	}
 	
 	function updateDrag(e)
 	{
-		blitter.viewx = Std.int(dragX + stage.mouseX);
-		blitter.viewy = Std.int(dragY + stage.mouseY);
+		viewport.viewx = Std.int(dragX + stage.mouseX);
+		viewport.viewy = Std.int(dragY + stage.mouseY);
 		
-		blitter.clear();
-		blitter.redraw();
+		viewport.requestClear = true;
 	}
 
 	function endDrag(e)
