@@ -9,45 +9,63 @@ import flash.ui.Keyboard;
 class MapPathingHandler
 {
 	var stage:Stage;
-	var slate:Sprite;
-	var viewer:MapViewer;
+	var viewport:Viewport;
+	var mapBlitter:MapBlitter;
 	
 	var lastX:Int = -1;
 	var lastY:Int = -1;
 	
-	public function new(stage:Stage, slate:Sprite, viewer:MapViewer) 
+	var mouseX:Float = 0;
+	var mouseY:Float = 0;
+	
+	public function new(stage:Stage, viewport:Viewport, mapBlitter:MapBlitter) 
 	{
 		this.stage = stage;
-		this.slate = slate;
-		this.viewer = viewer;
+		this.viewport = viewport;
+		this.mapBlitter = mapBlitter;
 		
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 	}
 	
 	function onMouseDown(e)
 	{
-		pathBetweenPoints();
+		recordMousePosition();
+	}
+	
+	function onMouseUp(e)
+	{
+		if (mouseX == stage.mouseX && mouseY == stage.mouseY)
+		{
+			pathBetweenPoints();
+		}
 	}
 	
 	function onKeyDown(e:KeyboardEvent):Void
 	{
 		if (e.keyCode == Keyboard.M && e.ctrlKey)
 		{
-			viewer.togglePathingInfo();
+			mapBlitter.togglePathingInfo();
 		}
+	}
+	
+	function recordMousePosition():Void
+	{
+		mouseX = stage.mouseX;
+		mouseY = stage.mouseY;
 	}
 	
 	function pathBetweenPoints():Void
 	{
-		var x:Int = Math.floor(slate.mouseX / 32);
-		var y:Int = Math.floor(slate.mouseY / 32);
+		var x:Int = Math.floor(viewport.getMouseX() / 32);
+		var y:Int = Math.floor(viewport.getMouseY() / 32);
 		
 		trace("Tile: " + x + ", " + y);
 		
 		if (lastX != -1 && lastY != -1)
 		{
-			viewer.pathBetween(x, y, lastX, lastY);
+			mapBlitter.pathBetween(x, y, lastX, lastY);
 			lastX = -1;
 			lastY = -1;
 		}
@@ -55,7 +73,7 @@ class MapPathingHandler
 		{
 			lastX = x;
 			lastY = y;
-			viewer.pathBetween(x, y, lastX, lastY);
+			mapBlitter.pathBetween(x, y, lastX, lastY);
 		}
 	}
 }

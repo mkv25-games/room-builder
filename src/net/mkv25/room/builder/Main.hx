@@ -7,11 +7,14 @@ import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.Lib;
 import flash.ui.Keyboard;
+import haxe.Log;
+import haxe.PosInfos;
 import haxe.Timer;
-import net.mkv25.room.viewer.MapDragHandler;
+import net.mkv25.room.viewer.Blitter;
+import net.mkv25.room.viewer.ViewportDragHandler;
 import net.mkv25.room.viewer.MapPathingHandler;
-import net.mkv25.room.viewer.MapSlate;
-import net.mkv25.room.viewer.MapViewer;
+import net.mkv25.room.viewer.Viewport;
+import net.mkv25.room.viewer.MapBlitter;
 import openfl.Assets;
 
 class Main extends Sprite 
@@ -20,26 +23,43 @@ class Main extends Sprite
 
 	/* ENTRY POINT */
 	
-	var viewer:MapViewer;
-	var slate:MapSlate;
+	var viewport:Viewport;
+	var blitter:Blitter;
+	var map:MapBlitter;
 	var pathingHandler:MapPathingHandler;
-	var dragHandler:MapDragHandler;
+	var dragHandler:ViewportDragHandler;
 	
 	function init() 
 	{
 		if (inited) return;
 		inited = true;
 		
-		viewer = new MapViewer();
-		viewer.baseColour = 0xFF000000;
-		viewer.setup(40, 20);
+		// disable traces
+		#if !debug
+		Log.trace = nullTrace;
+		#end
 		
-		slate = new MapSlate(stage, viewer);
-		viewer.generateNewFloorplan();
-		viewer.generatePathing();
+		blitter = new Blitter();
+		viewport = new Viewport(stage, blitter);
 		
-		pathingHandler = new MapPathingHandler(stage, slate.getContainer(), viewer);
-		dragHandler = new MapDragHandler(stage, slate.getContainer());
+		map = new MapBlitter();
+		map.baseColour = 0xFF000000;
+		map.setup(40, 20);
+		
+		blitter.add(map);
+		
+		map.generateNewFloorplan();
+		map.generatePathing();
+		
+		pathingHandler = new MapPathingHandler(stage, viewport, map);
+		dragHandler = new ViewportDragHandler(stage, blitter);
+		
+		viewport.resize();
+	}
+	
+	function nullTrace(v:Dynamic, ?inf:PosInfos)
+	{
+		// no trace
 	}
 	
 	function resize(e) 
@@ -47,10 +67,7 @@ class Main extends Sprite
 		if (!inited) init();
 		// else (resize or orientation change)
 		
-		if (slate != null)
-		{
-			slate.resize();
-		}
+		viewport.resize();
 	}
 	
 	/* SETUP */
