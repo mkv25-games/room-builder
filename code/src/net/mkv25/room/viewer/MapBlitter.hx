@@ -26,7 +26,6 @@ class MapBlitter implements Blittable
 	public var dirty:Bool;
 	
 	public var floorplan:Floorplan;
-	public var generator:FloorplanGenerator;
 	
 	public var baseColour:Int = 0xFFAAAAAA;
 	
@@ -42,24 +41,16 @@ class MapBlitter implements Blittable
 		dirty = false;
 		
 		floorplan = new Floorplan();
-		generator = new FloorplanGenerator();
 		
 		floorPainter = new Tileset(Tile.WIDTH, Tile.HEIGHT, Assets.getBitmapData('img/g02.png'));
 		wallPainter = new Wallset(Wallpiece.WIDTH, Wallpiece.HEIGHT, Assets.getBitmapData('img/w01.png'));
 		doorPainter = new Tileset(Door.WIDTH, Door.HEIGHT, Assets.getBitmapData('img/d01.png'));
 	}
 	
-	public function setup(columns:Int, rows:Int):Void
+	public function setup(floorplan:Floorplan, columns:Int, rows:Int):Void
 	{
+		this.floorplan = floorplan;
 		artwork.bitmapData = new BitmapData(columns * Tile.WIDTH, rows * Tile.HEIGHT, false, baseColour);
-		
-		dirty = true;
-	}
-	
-	public function generateNewFloorplan():Void
-	{
-		artwork.bitmapData.fillRect(new Rectangle(0, 0, artwork.width, artwork.height), baseColour);
-		generator.generateFloorplan(floorplan);
 		
 		dirty = true;
 	}
@@ -95,13 +86,5 @@ class MapBlitter implements Blittable
 		{
 			doorPainter.blitTile(door.doorType, artwork.bitmapData, room.x + door.x, (room.y + door.y - 1) / 2);
 		}
-	}
-	
-	public function cycleRoomSamples()
-	{
-		generator.tos = (generator.tos + 1) % 32;
-		generator.wos = (generator.wos + 1) % 16;
-		
-		generateNewFloorplan();
 	}
 }

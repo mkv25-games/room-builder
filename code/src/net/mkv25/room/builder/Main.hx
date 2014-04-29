@@ -10,7 +10,9 @@ import flash.ui.Keyboard;
 import haxe.Log;
 import haxe.PosInfos;
 import haxe.Timer;
+import net.mkv25.room.generator.FloorplanGenerator;
 import net.mkv25.room.pathfinding.PathFinder;
+import net.mkv25.room.planner.Floorplan;
 import net.mkv25.room.viewer.Blitter;
 import net.mkv25.room.viewer.PathGrid;
 import net.mkv25.room.viewer.ViewportDragHandler;
@@ -48,10 +50,15 @@ class Main extends Sprite
 		viewport = new Viewport(stage);
 		blitter = new Blitter(viewport);
 		
+		// create floorplan
+		var generator = new FloorplanGenerator();
+		var floorplan = new Floorplan();
+		generator.generateFloorplan(floorplan);
+		
 		// create map
 		map = new MapBlitter();
 		map.baseColour = 0xFF000000;
-		map.setup(40, 20);
+		map.setup(floorplan, 40, 20);
 		blitter.add(map);
 		
 		// create path finding
@@ -60,8 +67,7 @@ class Main extends Sprite
 		pathgrid.setup(40, 20);
 		blitter.add(pathgrid);
 		
-		// do stuff with map
-		map.generateNewFloorplan();
+		// generate path finding
 		pathgrid.generatePathing(map.floorplan);
 		
 		// create handler
