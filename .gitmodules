@@ -1,0 +1,9 @@
+[submodule "code/externals/polygonal-ds"]
+	path = code/externals/polygonal-ds
+	url = https://github.com/polygonal/ds.git
+[submodule "code/externals/polygonal-core"]
+	path = code/externals/polygonal-core
+	url = https://github.com/polygonal/core.git
+[submodule "code/externals/polygonal-printf"]
+	path = code/externals/polygonal-printf
+	url = https://github.com/polygonal/printf.git
