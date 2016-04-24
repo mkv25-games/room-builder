@@ -29,7 +29,7 @@
  */
 package net.mkv25.room.pathfinding;
 
-import de.polygonal.ds.DA;
+import de.polygonal.ds.ArrayList;
 import de.polygonal.ds.Graph;
 import de.polygonal.ds.Heap;
 
@@ -37,30 +37,30 @@ class AStar
 {
 	var _graph:Graph<AStarWaypoint>;
 	var _que:Heap<AStarWaypoint>;
-	
+
 	public function new(graph:Graph<AStarWaypoint>)
 	{
 		_graph = graph;
 		_que = new Heap<AStarWaypoint>();
 	}
-	
+
 	public function free():Void
 	{
 		_graph.free();
 		_que.free();
-		
+
 		_graph = null;
 		_que = null;
 	}
-	
+
 	/**
 	 * Finds the shortest path from source to target and stores the result in path.
 	 * @return true if a path from source to target exists.
 	 */
-	public function find(graph:Graph<AStarWaypoint>, source:AStarWaypoint, target:AStarWaypoint, path:DA<AStarWaypoint>):Bool
+	public function find(graph:Graph<AStarWaypoint>, source:AStarWaypoint, target:AStarWaypoint, path:ArrayList<AStarWaypoint>):Bool
 	{
 		var pathExists = false;
-		
+
 		//reset search
 		var walker = graph.getNodeList();
 		while (walker != null)
@@ -71,58 +71,58 @@ class AStar
 			walker.val.reset();
 			walker = walker.next;
 		}
-		
+
 		//shortcut to _que
 		var q = _que;
-		
+
 		//reset queue
 		q.clear();
-		
+
 		//enqueue starting node
 		q.add(source);
-		
+
 		//while there are waypoints in the queue...
-		while (q.size() > 0)
+		while (q.size > 0)
 		{
 			//grab the next waypoint off the queue and process it
 			var waypoint1 = q.pop();
 			waypoint1.onQue = false;
-			
+
 			//each waypoint holds a reference to its GraphNode
 			var node1 = waypoint1.node;
-			
+
 			//make sure the waypoint wasn't visited before (can be visited multiple times)
 			if (node1.marked) continue;
-			
+
 			//mark node as processed
 			node1.marked = true;
-			
+
 			//exit if the target node has been found
 			if (node1 == target.node)
 			{
 				pathExists = true;
 				break;
 			}
-			
+
 			//visit all connected nodes (denoted as waypoint2, node2)
 			var arc = node1.arcList;
 			while (arc != null)
 			{
 				//the node our arc is pointing at
 				var node2 = arc.node;
-				
+
 				//skip marked nodes
 				if (node2.marked)
 				{
 					arc = arc.next;
 					continue;
 				}
-				
+
 				var waypoint2 = node2.val;
-				
+
 				//compute accumulated distance to get from the current waypoint (1) to the next waypoint (2)
 				var distance = waypoint1.distance + waypoint1.distanceTo(waypoint2) * arc.cost;
-				
+
 				//node has been processed before ?
 				if (node2.parent != null)
 				{
@@ -146,24 +146,24 @@ class AStar
 					node2.parent = node1;
 					waypoint2.distance = distance;
 				}
-				
+
 				//compute A* heuristics
 				var heuristics = waypoint2.distanceTo(target) + distance;
-				
+
 				//waypoints closest to the source node are processed first
 				waypoint2.heuristic = heuristics;
-				
+
 				//add to the search frontier
 				if (!waypoint2.onQue)
 				{
 					waypoint2.onQue = true;
 					q.add(waypoint2);
 				}
-				
+
 				arc = arc.next;
 			}
 		}
-		
+
 		if (pathExists)
 		{
 			//trace the path by working back through the parents
@@ -174,11 +174,11 @@ class AStar
 				path.pushBack(walker);
 				walker = walker.node.parent.val;
 			}
-			
+
 			path.pushBack(source);
 			path.reverse();
 		}
-		
+
 		return pathExists;
 	}
 }
